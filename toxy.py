@@ -84,7 +84,7 @@ def testa_proxies(proxies):
 					#good_proxies.append(proxy)
 					if (modo != Modos.Reteste):
 						salva(proxy)
-			except:
+			except requests.exceptions.RequestException:
 				print("["+Fore.YELLOW+"INFO"+Style.RESET_ALL+"] Proxy "+Fore.RED+'ruim'+Style.RESET_ALL+': {} no site {}'.format(proxy, url))
 	return good_proxies
 def menu():
@@ -195,15 +195,12 @@ if __name__ == '__main__':
 	if(sys.argv[1]=="-i"):
 		print("["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Modo Interativo")
 		modo = Modos.Interativo
-		# interativo = True
 	elif(sys.argv[1]=="-a"):
 		print("["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Modo Automático "+Fore.YELLOW+"(recomendado rodar em background)"+Style.RESET_ALL)
 		modo = Modos.Automatico
-		# interativo = False
 	elif(sys.argv[1]=="-r"):
 		print("["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Modo Reteste de Proxies "+Fore.YELLOW+"(realiza o teste nos proxies do arquivo proxies.txt)"+Style.RESET_ALL)
 		modo = Modos.Reteste
-		# interativo = False
 	else:
 		print("["+Fore.RED+"ERRO"+Style.RESET_ALL+"] Modo Desconhecido")
 		mensagem_de_uso()
@@ -231,33 +228,38 @@ if __name__ == '__main__':
 
 	proxies = []
 
-	if (modo == Modos.Reteste):
-		arq=open("proxies.txt", "r+")
-		for line in arq:
-			proxies.append(line.strip('\n\r\t '))
-		arq.close()
-	else:
+	try:
+		if (modo == Modos.Reteste):
+			arq=open("proxies.txt", "r+")
+			for line in arq:
+				proxies.append(line.strip('\n\r\t '))
+			arq.close()
+			# Testa os proxies:
+			if(len(proxies)>=1):
+				testa_proxies(proxies) #retorna só proxies operantes
+		else:
+			for x in range(len(urls)):
+				try:
+					response = requests.get(urls[x], headers=ua, timeout=10)
+				except requests.exceptions.RequestException:
+					print("["+Fore.RED+"ERRO"+Style.RESET_ALL+"] Ocorreu um erro em "+urls[x] )
+					continue
 
-		for x in range(len(urls)):
-			try:
-				response = requests.get(urls[x], headers=ua, timeout=10)
-			except:
-				print("["+Fore.RED+"ERRO"+Style.RESET_ALL+"] Ocorreu um erro em "+urls[x] )
-				continue
+				# resposta vazia
+				html = response.text
+				if not html:
+					print("["+Fore.YELLOW+"AVISO"+Style.RESET_ALL+"] Resposta vazia de "+urls[x] )
+					continue
 
-			# resposta vazia
-			html = response.text
-			if not html:
-				print("["+Fore.YELLOW+"AVISO"+Style.RESET_ALL+"] Resposta vazia de "+urls[x] )
-				continue
+				print("["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Pegando de "+urls[x])
+				
+				proxies+=processa(html)
 
-			print("["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Pegando de "+urls[x])
-			
-			proxies+=processa(html)
-	
-	# Testa os proxies:
-
-	if(len(proxies)>=1):
-		testa_proxies(proxies) #retorna só proxies operantes
-	if(modo == Modos.Interativo):
-		menu()
+				# Testa os proxies:
+				if(len(proxies)>=1):
+					testa_proxies(proxies) #retorna só proxies operantes
+				if(modo == Modos.Interativo):
+					menu()
+	except KeyboardInterrupt:
+		print("\n\n["+Fore.RED+"EXIT"+Style.RESET_ALL+"] Encerrando o programa...\n")
+		exit(0)
