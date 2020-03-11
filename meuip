@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+import requests, sys
+from colorama import Fore, Back, Style
+from bs4 import BeautifulSoup
+import locale
+
+headers = {"User-agent" : "Mozilla/5.0 (Windows NT 10; WOW64; rv:72.0) Gecko/20100101 Firefox/72.0"};
+try:
+    r = requests.get("https://wtfismyip.com/xml", headers=headers);
+    r.encoding = "unicode" 
+except:
+    print("Falha ao enviar requisição", file=sys.stderr);
+    exit();
+
+soup = BeautifulSoup(r.text, "lxml");
+
+print( Fore.GREEN+"IP: "+Fore.YELLOW+str(soup.find("your-fucking-ip-address").text ) );
+print( Fore.GREEN+"Localização: "+Fore.YELLOW+str(soup.find("your-fucking-location").text ) );
+print( Fore.GREEN+"Hostname: "+Fore.YELLOW+str(soup.find("your-fucking-hostname").text ) );
+print( Fore.GREEN+"ISP: "+Fore.YELLOW+str(soup.find("your-fucking-isp").text ) );
+print( Fore.GREEN+"Tor: "+Fore.YELLOW+str(soup.find("your-fucking-tor-exit").text ) );
+print( Fore.GREEN+"Código do país: "+Fore.YELLOW+str(soup.find("your-fucking-country-code").text )+Style.RESET_ALL );
