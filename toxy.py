@@ -21,7 +21,7 @@ modo = Modos.Automatico
 
 def geoip(ip):
 	try:
-		response = requests.get(geoip_url + ip, headers=ua, timeout=2)
+		response = requests.get( geoip_url+ip+"?lang=pt-BR", headers=ua, timeout=2 )
 		if response.status_code == 200:
 			info = json.loads(response.content)
 			return info['country']
