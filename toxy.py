@@ -3,7 +3,7 @@
 # baseado em:
 #	github.com/yousefissa/Proxy-Tester
 
-import requests, re, os, sys, base64
+import requests, re, os, sys, base64, json
 from colorama import Fore,Back, Style
 from time import time
 from enum import Enum
@@ -16,8 +16,18 @@ class Modos(Enum):
 
 sites = ["http://wikipedia.org"]
 ua = { "User-Agent" : "Mozilla/5.0 (Windows NT 6.1; Win64; rv:72.0) Gecko/20100101 Firefox/72.0" }
+geoip_url = "http://ip-api.com/json/"
 modo = Modos.Automatico
 
+def geoip(ip):
+	try:
+		response = requests.get(geoip_url + ip, headers=ua, timeout=2)
+		if response.status_code == 200:
+			info = json.loads(response.content)
+			return info['country']
+	except requests.exceptions.RequestException:
+		print("["+Fore.YELLOW+"AVISO"+Style.RESET_ALL+"] Erro ao tentar buscar infos de geoip")
+	return 'Sem info de pais'
 
 def banner():
 	print("""
@@ -79,8 +89,9 @@ def testa_proxies(proxies):
 					print("["+Fore.YELLOW+"INFO"+Style.RESET_ALL+"] {} não é um proxy bom.".format(proxy))
 					bad_proxies.append(proxy)
 				else:
+					geo = geoip(proxy.split(':')[0])
 					print(
-						"["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Proxy "+Fore.GREEN+"bom"+Style.RESET_ALL+': {} no site {} ---- {} ms'.format(proxy, url, mil_seconds() - start_time))
+						"["+Fore.GREEN+"INFO"+Style.RESET_ALL+"] Proxy "+Fore.GREEN+"bom"+Style.RESET_ALL+': {} no site {} ---- {} ms - {}'.format(proxy, url, mil_seconds() - start_time, geo))
 					#good_proxies.append(proxy)
 					if (modo != Modos.Reteste):
 						salva(proxy)
@@ -122,22 +133,22 @@ urls=[]
 urls+=[
 		"http://aliveproxy.com/fastest-proxies/",
 		"http://aliveproxy.com/anonymous-proxy-list",
-		"http://aliveproxy.com/fr-proxy-list",
+		"http://aliveproxy.com/us-proxy-list",
 		"http://aliveproxy.com/proxy-list-port-3128",
-		"http://aliveproxy.com/proxy-list-port-80",
-		"http://aliveproxy.com/proxy-list-port-8080",
+		#"http://aliveproxy.com/proxy-list-port-80",
+		#"http://aliveproxy.com/proxy-list-port-8080",
 		"http://aliveproxy.com/ru-proxy-list",
-		"http://atomintersoft.com/products/alive-proxy/proxy-list",
-		"http://atomintersoft.com/products/alive-proxy/proxy-list?ap=9",
-		"http://atomintersoft.com/products/alive-proxy/proxy-list/3128",
-		"http://atomintersoft.com/proxy_list_domain_com",
+		#"http://atomintersoft.com/products/alive-proxy/proxy-list",
+		#"http://atomintersoft.com/products/alive-proxy/proxy-list?ap=9",
+		#"http://atomintersoft.com/products/alive-proxy/proxy-list/3128",
+		#"http://atomintersoft.com/proxy_list_domain_com",
 		"http://atomintersoft.com/proxy_list_port_3128",
-		"http://atomintersoft.com/proxy_list_port_80",
+		#"http://atomintersoft.com/proxy_list_port_80",
 
 		#obfusca com base64
-		"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any",
-		"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=2",
-		"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=3",
+		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any",
+		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=2",
+		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=3",
 
 
 		#"http://rootjazz.com/proxies/proxies.txt", #403
