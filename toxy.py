@@ -15,7 +15,7 @@ class Modos(Enum):
 	SizeModos = 3
 
 sites = ["http://wikipedia.org"]
-ua = { "User-Agent" : "Mozilla/5.0 (Windows NT 6.1; Win64; rv:72.0) Gecko/20100101 Firefox/72.0" }
+ua = { "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; rv:78.0) Gecko/20100101 Firefox/78.0" }
 geoip_url = "http://ip-api.com/json/"
 modo = Modos.Automatico
 
@@ -36,7 +36,7 @@ def banner():
 	    888     d888 888b   Y8b Y   Y8b Y8P  
 	    888     Y888 888P  e Y8b     Y8b Y   
 	    888      °88 88°  d8b Y8b     888   """+Fore.GREEN+"""by soneca"""+Style.RESET_ALL+"""
-	                                  888   """+Fore.YELLOW+"""pzqcmpphmomfvih2.onion"""+Style.RESET_ALL+"""
+	                                  888   """+Fore.YELLOW+"""http://gg.gg/thenter"""+Style.RESET_ALL+"""
 	                                  888   
 		""")
 def mensagem_de_uso():
@@ -131,47 +131,43 @@ def processa(source):
 urls=[]
 # Escolha os sites que deseja escanear
 urls+=[
-		"http://aliveproxy.com/fastest-proxies/",
-		"http://aliveproxy.com/anonymous-proxy-list",
-		"http://aliveproxy.com/us-proxy-list",
-		"http://aliveproxy.com/proxy-list-port-3128",
-		#"http://aliveproxy.com/proxy-list-port-80",
-		#"http://aliveproxy.com/proxy-list-port-8080",
-		"http://aliveproxy.com/ru-proxy-list",
-		#"http://atomintersoft.com/products/alive-proxy/proxy-list",
+		"https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=500", # 22/120 proxies
+		"https://www.proxy-list.download/api/v1/get?type=http&country=BR", # 3/11
+		"https://www.proxy-list.download/api/v1/get?type=http", # 453
+		"http://proxy-ip-list.com/download/free-usa-proxy-ip.txt", # 2/11
+		"http://aliveproxy.com/fastest-proxies/", # 3/23
+
+		#"http://aliveproxy.com/anonymous-proxy-list", # 0/10
+		#"http://aliveproxy.com/us-proxy-list", # 0/10
+		#"http://aliveproxy.com/proxy-list-port-3128", # 1/25
+		"http://aliveproxy.com/proxy-list-port-80", # 2/25
+		#"http://aliveproxy.com/proxy-list-port-8080", # 0/25
+		#"http://aliveproxy.com/ru-proxy-list",
+
+		"http://atomintersoft.com/products/alive-proxy/proxy-list",
 		#"http://atomintersoft.com/products/alive-proxy/proxy-list?ap=9",
 		#"http://atomintersoft.com/products/alive-proxy/proxy-list/3128",
 		#"http://atomintersoft.com/proxy_list_domain_com",
-		"http://atomintersoft.com/proxy_list_port_3128",
+		#"http://atomintersoft.com/proxy_list_port_3128",
 		#"http://atomintersoft.com/proxy_list_port_80",
 
 		#obfusca com base64
-		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any",
+		"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any",
 		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=2",
 		#"http://best-proxy.com/english/search.php?search=anonymous-and-elite&country=any&type=anonymous-and-elite&port=any&ssl=any&p=3",
 
 
 		#"http://rootjazz.com/proxies/proxies.txt", #403
-		#"http://www.my-proxy.com/free-proxy-list.html", #70
-		#"http://www.proxyblind.org/anonymous-proxy.shtml", #49
+		"http://www.my-proxy.com/free-proxy-list.html", #70
+		"http://www.proxyblind.org/anonymous-proxy.shtml", # 2/49 proxies
 		#"http://www.proxyblind.org/free-proxy.shtml",
 		#"http://www.proxyblind.org/proxy-list.shtml",
 		#"http://www.proxyblind.org/ssl.shtml",
-		#"spys.me/proxy.txt" #300
 		#"https://github.com/clarketm/proxy-list/blob/master/proxy-list.txt", #300
-
-		#esconde porta com js + recaptcha
-		#"http://free-proxy-list.net/",
-		#"http://free-proxy-list.net/anonymous-proxy.html",
-		#"http://free-proxy-list.net/uk-proxy.html",
-
-		# js
-		#"http://multiproxy.org/anon_proxy.htm",
-
-		#ip separado da porta ip :porta
-		#"http://www.ip-adress.com/proxy_list/?k=time&d=desc",
+		"http://spys.me/proxy.txt" # /300
 	]
 #obfusca com base64
+'''
 urls.append("http://proxy-list.org/english/index.php" )
 for num in range(2, 11):
 	urls.append("http://proxy-list.org/english/index.php?p=" + str(num))
@@ -181,7 +177,7 @@ for c in range(1, 30):
 		urls.append("http://nntime.com/proxy-list-0"+str(c)+".htm")
 	else:
 		urls.append("http://nntime.com/proxy-list-"+str(c)+".htm")
-
+'''
 
 if __name__ == '__main__':
 
@@ -243,7 +239,7 @@ if __name__ == '__main__':
 		if (modo == Modos.Reteste):
 			arq=open("proxies.txt", "r+")
 			for line in arq:
-				proxies.append(line.strip('\n\r\t '))
+				proxies.append(line.split(' ')[0].strip('\n\r\t '))
 			arq.close()
 			# Testa os proxies:
 			if(len(proxies)>=1):
